@@ -1,5 +1,6 @@
 package com.api.student.in.services.sercviceImpl;
 
+import com.api.student.in.dto.ApiResponse;
 import com.api.student.in.dto.UserDto;
 import com.api.student.in.dto.UserResponseDto;
 import com.api.student.in.entity.UserEntity;
@@ -11,6 +12,7 @@ import com.api.student.in.utils.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,10 +65,9 @@ public class UserServiceImpl  implements UserService {
     @Override
     public List<UserEntity> getAllUsers() {
        List<UserEntity> allUsers= this.userRepository.findAll();
-       List<UserEntity> activeUsers=allUsers.stream().filter(user -> user.getDeletedAt()==null)
-               .collect(Collectors.toList());
 
-       return  activeUsers;
+        return allUsers.stream().filter(user -> user.getDeletedAt()==null)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -77,7 +78,7 @@ public class UserServiceImpl  implements UserService {
         Optional<UserEntity> userWithEmail=userRepository.findByEmailAndDeletedAtIsNull(userDto.getEmail());
 
         if ((userWithEmail).isPresent() &&
-                !userWithEmail.get().getId().equals(userId)) {
+                !userWithEmail.get().getId().equals(userid)) {
 
             throw new EmailAlreadyExistsException("Email already exists");
         }
@@ -99,6 +100,18 @@ public class UserServiceImpl  implements UserService {
                 .dateOfBirth(updatedUser.getDateOfBirth())
                 .build();
         return userResponseDto;
+    }
+
+    @Override
+    public ApiResponse deleteUserById(Long id) {
+        UserEntity user=this.userRepository.findById(id).
+                orElseThrow(()->new UserNotFoundException("user not found"));
+
+        user.setDeletedAt(LocalDateTime.now());
+        user.setUserStatus(UserStatus.INACTIVE);
+        userRepository.save(user);
+
+        return new ApiResponse(false,"user deleted successfully",null);
     }
 
     private UserResponseDto mapToUserResponseDto(UserEntity user){

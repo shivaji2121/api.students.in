@@ -1,5 +1,6 @@
 package com.api.student.in.services;
 
+import com.api.student.in.dto.ApiResponse;
 import com.api.student.in.dto.ResponseDto;
 import com.api.student.in.dto.UserDto;
 import com.api.student.in.dto.UserResponseDto;
@@ -19,4 +20,6 @@ public interface UserService {
 
 
     UserResponseDto updateUserById(UserDto userDto,Long userid);
+
+    ApiResponse deleteUserById(Long id);
 }

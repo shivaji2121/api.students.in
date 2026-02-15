@@ -1,6 +1,7 @@
 package com.api.student.in.controllers;
 
 
+import com.api.student.in.dto.ApiResponse;
 import com.api.student.in.dto.ResponseDto;
 import com.api.student.in.dto.UserDto;
 import com.api.student.in.dto.UserResponseDto;
@@ -48,5 +49,10 @@ public class UserController {
     public  ResponseEntity<UserResponseDto> updateUserById(@RequestBody UserDto userDto,@PathVariable Long userId){
         UserResponseDto updatedUser=this.userService.updateUserById(userDto,userId);
         return  ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public  ResponseEntity<ApiResponse> deleteUserById(@PathVariable Long id){
+        return ResponseEntity.ok(userService.deleteUserById(id));
     }
 }
